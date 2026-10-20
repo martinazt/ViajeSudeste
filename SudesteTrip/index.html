@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard: Viaje Épico a Asia</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+
+    <header class="hero">
+        <span class="badge">11 Marzo - 10 Abril (30 Días)</span>
+        <h1>Sudeste Asiático: Presupuesto Mochilero</h1>
+        <p>Dashboard interactivo grupal. Ruta 3: Singapur ➔ Bali ➔ Vietnam ➔ Tailandia.</p>
+    </header>
+
+    <div class="tabs-container">
+        <button class="tab-btn active" data-tab="tab-itinerario"><i class="ri-map-pin-line"></i> Ruta Completa</button>
+        <button class="tab-btn" data-tab="tab-presupuesto"><i class="ri-wallet-3-line"></i> Presupuesto ($2,600)</button>
+        <button class="tab-btn" data-tab="tab-aloj"><i class="ri-hotel-bed-line"></i> Hostels & Guesthouses</button>
+        <button class="tab-btn" data-tab="tab-logistica"><i class="ri-passport-line"></i> Salud y Visados</button>
+    </div>
+
+    <main class="content-wrapper">
+
+        <!-- TAB 1: ITINERARIO -->
+        <section id="tab-itinerario" class="tab-content active glass-panel">
+            <h2 class="section-title"><i class="ri-route-line"></i> Itinerario Optimizado (Modo Mochila)</h2>
+            
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title"><span>1. Singapur</span> (Días 1 a 3)</div>
+                    <i class="ri-arrow-down-s-line accordion-icon"></i>
+                </div>
+                <div class="accordion-body">
+                    <div class="day-grid">
+                        <div class="day-card"><strong>Día 1:</strong> Llegada SCL-SIN. Atardecer en Gardens by the Bay. Check-in en hostel.</div>
+                        <div class="day-card"><strong>Día 2:</strong> ¡Universal Studios en Sentosa! Noche paseando por Clarke Quay.</div>
+                        <div class="day-card"><strong>Día 3:</strong> Vuelo Low-cost temprano (Scoot/AirAsia) directo hacia Bali (Indonesia).</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title"><span>2. Bali, Indonesia</span> (Días 3 a 11)</div>
+                    <i class="ri-arrow-down-s-line accordion-icon"></i>
+                </div>
+                <div class="accordion-body">
+                    <div class="day-grid">
+                        <div class="day-card"><strong>Día 3-5 (Ubud):</strong> Cascadas gigante Sekumpul, templos del agua (Tirta Empul) y arrozales. Noche en Guesthouse en la selva.</div>
+                        <div class="day-card"><strong>Día 6-8 (Seminyak):</strong> Templo Uluwatu con danza del fuego, Beach Clubs públicos, e Isla Nusa Penida (ruta mochilera).</div>
+                        <div class="day-card"><strong>Día 9-11 (Canggu):</strong> Cafés hipsters baratos, clases surf, y vuelo en el Día 11 hacia Vietnam Sur.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title"><span>3. Vietnam Central y Sur</span> (Días 11 a 16)</div>
+                    <i class="ri-arrow-down-s-line accordion-icon"></i>
+                </div>
+                <div class="accordion-body">
+                    <div class="day-grid">
+                        <div class="day-card"><strong>Día 11-12 (Ho Chi Minh):</strong> Sopa Pho de 2 dólares, Túneles de Cu Chi. Vuelo interno hacia Da Nang (DAD).</div>
+                        <div class="day-card"><strong>Día 13-15 (Hoi An):</strong> Casco Antiguo de noche iluminado con miles de faroles. Ropa a medida hiperbarata. Relax y jugos de fruta en puestos de calle.</div>
+                        <div class="day-card"><strong>Día 16:</strong> Vuelo hacia Tailandia (BKK) cruzando el continente.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <div class="accordion-title"><span>4. Tailandia Mágica y Playas</span> (Días 16 a 30)</div>
+                    <i class="ri-arrow-down-s-line accordion-icon"></i>
+                </div>
+                <div class="accordion-body">
+                    <div class="day-grid">
+                        <div class="day-card"><strong>Día 16-18 (BKK):</strong> Llegada. Gran Palacio, mercado Khao San Road. Compras en MBK y tren nocturno o vuelo barato ($20) a Chiang Mai.</div>
+                        <div class="day-card"><strong>Día 19-21 (Chiang Mai):</strong> Explorar el norte bohemio. Santuario de Elefantes (ético), Doi Suthep y Night Bazaars.</div>
+                        <div class="day-card"><strong>Día 22-29 (Ao Nang / Krabi):</strong> El cierre dorado en el Sur. Tours masivos colectivos a Phi Phi Islands (Maya Bay) y Railay Beach. Sol, playa y masajes callejeros a $7.</div>
+                        <div class="day-card"><strong>Día 30:</strong> Vuelo a Singapur temprano, visitar el aeropuerto interactivo Changi y conexión hacia Santiago.</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: PRESUPUESTO -->
+        <section id="tab-presupuesto" class="tab-content glass-panel">
+            <h2 class="section-title"><i class="ri-coins-line"></i> Presupuesto Mochilero Extremo</h2>
+            <div class="budget-grid">
+                <div class="budget-card">
+                    <i class="ri-plane-fill"></i>
+                    <h3>Vuelo Largo SCL-SIN</h3>
+                    <div class="amount">$1,406</div>
+                </div>
+                <div class="budget-card">
+                    <i class="ri-home-heart-line"></i>
+                    <h3>Alojamiento Hostels (29n)</h3>
+                    <div class="amount">$290</div>
+                </div>
+                <div class="budget-card">
+                    <i class="ri-bowl-line"></i>
+                    <h3>Street Food (30d)</h3>
+                    <div class="amount">$300</div>
+                </div>
+                <div class="budget-card">
+                    <i class="ri-flight-takeoff-line"></i>
+                    <h3>Vuelos Internos (7kg)</h3>
+                    <div class="amount">$200</div>
+                </div>
+                <div class="budget-card">
+                    <i class="ri-bus-wifi-fill"></i>
+                    <h3>Transporte Lento</h3>
+                    <div class="amount">$100</div>
+                </div>
+                <div class="budget-card">
+                    <i class="ri-ticket-2-line"></i>
+                    <h3>Universal / Visas</h3>
+                    <div class="amount">$300</div>
+                </div>
+                <div class="total-tag">
+                    <h3>TOPE MÁXIMO (Por persona)</h3>
+                    <h2>$2,596 USD</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ALOJAMIENTOS -->
+        <section id="tab-aloj" class="tab-content glass-panel">
+            <h2 class="section-title"><i class="ri- building-line"></i> Hostelería "Budget-Chic" ($10/Noche)</h2>
+            <div class="hostel-grid">
+                
+                <div class="hostel-card">
+                    <span class="h-tag">Singapur</span>
+                    <h3>Wink Capsule Hostel</h3>
+                    <p class="loc"><i class="ri-map-pin-2-fill"></i> Chinatown, Singapur</p>
+                    <div class="h-price">$25/noche</div>
+                    <div class="pros-cons">
+                        <div class="pro"><i class="ri-check-line"></i> Cápsulas para mayor privacidad</div>
+                        <div class="con"><i class="ri-close-line"></i> Difícil bajar a $10 aquí (ciudad cara)</div>
+                    </div>
+                </div>
+
+                <div class="hostel-card">
+                    <span class="h-tag">Ubud (Bali)</span>
+                    <h3>Kuna Bali Hostel</h3>
+                    <p class="loc"><i class="ri-map-pin-2-fill"></i> Ubud Center</p>
+                    <div class="h-price">$12/noche</div>
+                    <div class="pros-cons">
+                        <div class="pro"><i class="ri-check-line"></i> Piscina tropical, 100% diseño</div>
+                        <div class="con"><i class="ri-close-line"></i> Se comparte cuarto con mochileros</div>
+                    </div>
+                </div>
+
+                <div class="hostel-card">
+                    <span class="h-tag">Hoi An</span>
+                    <h3>Mad Monkey Hoi An</h3>
+                    <p class="loc"><i class="ri-map-pin-2-fill"></i> Borde Campos de Arroz</p>
+                    <div class="h-price">$8/noche</div>
+                    <div class="pros-cons">
+                        <div class="pro"><i class="ri-check-line"></i> Barato, eventos y fiesta de piscina</div>
+                        <div class="con"><i class="ri-close-line"></i> Muy intenso/ruidoso de noche</div>
+                    </div>
+                </div>
+
+                <div class="hostel-card">
+                    <span class="h-tag">Bangkok</span>
+                    <h3>The Yard Hostel</h3>
+                    <p class="loc"><i class="ri-map-pin-2-fill"></i> Ari (Distrito Artístico)</p>
+                    <div class="h-price">$11/noche</div>
+                    <div class="pros-cons">
+                        <div class="pro"><i class="ri-check-line"></i> Contenedores limpios, jardín gigante</div>
+                        <div class="con"><i class="ri-close-line"></i> Algo alejado del caos de Khao San</div>
+                    </div>
+                </div>
+
+                <div class="hostel-card">
+                    <span class="h-tag">Krabi / Ao Nang</span>
+                    <h3>K-Bunk Hostel</h3>
+                    <p class="loc"><i class="ri-map-pin-2-fill"></i> Ao Nang Interior</p>
+                    <div class="h-price">$7/noche</div>
+                    <div class="pros-cons">
+                        <div class="pro"><i class="ri-check-line"></i> Cenas comunitarias ultra baratas ($2)</div>
+                        <div class="con"><i class="ri-close-line"></i> Requiere tuktuk a la playa principal</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 4: LOGÍSTICA -->
+        <section id="tab-logistica" class="tab-content glass-panel">
+            <h2 class="section-title"><i class="ri-first-aid-kit-line"></i> Protocolos de Frontera (Pasaporte Chileno)</h2>
+            <ul class="logistics-list">
+                <li>
+                    <h4><i class="ri-syringe-line"></i> Salud Obligatoria: Vacuna Fiebre Amarilla</h4>
+                    <p>Viajando desde Sudamérica, Tailandia e Indonesia les exigirán en Migraciones su <strong>Certificado Internacional Amarillo</strong>. Deben vacunarse al menos 10 días antes del inicio del viaje.</p>
+                </li>
+                <li>
+                    <h4><i class="ri-folder-info-line"></i> Visados y Entradas</h4>
+                    <p><strong>Singapur & Tailandia:</strong> 100% Libre visado. Pasar por sello y listo.<br>
+                       <strong>Indonesia (Bali):</strong> <em>Visa On Arrival (VoA)</em>, pagan $32 USD en el aeropuerto al aterrizar.<br>
+                       <strong>Vietnam:</strong> <em>E-Visa Obligatoria</em>. NO se da en persona. Cuesta $25 USD vía la web oficial estatal mínimo 1 semana antes.</p>
+                </li>
+                <li>
+                    <h4><i class="ri-smartphone-line"></i> Apps Clave (Splitwise / Wise)</h4>
+                    <p>Lleven Splitwise para rendir cuentas del grupo. Compren dólares frescos y cambien billete a billete para evadir comisiones de cajero de Tailandia (220 THB de castigo por tarjeta insertada!).</p>
+                </li>
+                <li>
+                    <h4><i class="ri-briefcase-4-line"></i> Mochila 7KG - ¡Regla de Supervivencia!</h4>
+                    <p>Las aerolíneas AirAsia y VietJet pesan cada mochila en la puerta antes del avión de bajo coste. Pasarse del peso arruinará los $2600 del presupuesto total.</p>
+                </li>
+            </ul>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

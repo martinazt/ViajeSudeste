@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SE Asia Girls Trip 🌴✨</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- LEAFLET INTERACTIVE MAP CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+    <style>
+        :root {
+            /* Palette */
+            --jade: #1d4d4f;
+            --sage: #679289;
+            --terracotta: #b97a56;
+            --cream: #f7f9f8;
+            --gold: #d4af37;
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+            --bg-alt: #ecebe6;
+
+            /* Shadows & Radius */
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --radius-lg: 16px;
+            --radius-md: 8px;
+            --radius-pill: 50px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+        }
+
+        /* HEADER */
+        .hero {
+            background: linear-gradient(135deg, var(--jade) 0%, #133334 100%);
+            color: var(--text-light);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-bottom: 4px solid var(--gold);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+            color: var(--cream);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+        }
+
+        .trip-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .meta-pill {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1.5rem;
+            border-radius: var(--radius-pill);
+            backdrop-filter: blur(5px);
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* NAVIGATION */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(247, 249, 248, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 2px solid var(--sage);
+            color: var(--jade);
+            padding: 0.6rem 1.5rem;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: rgba(103, 146, 137, 0.1);
+        }
+
+        .tab-btn.active {
+            background: var(--sage);
+            color: var(--text-light);
+            box-shadow: 0 4px 15px rgba(103, 146, 137, 0.3);
+            border-color: var(--sage);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            font-size: 2.2rem;
+            color: var(--jade);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--terracotta);
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        /* MULTI-GRID */
+        .itinerary-grid,
+        .hotel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .itinerary-card,
+        .hotel-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--terracotta);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hotel-card {
+            padding: 0;
+            border-left: none;
+            overflow: hidden;
+        }
+
+        .itinerary-card:hover,
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .day-badge {
+            background: var(--bg-alt);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--jade);
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .tag.cultural {
+            background: var(--terracotta);
+        }
+
+        .tag.relax {
+            background: var(--sage);
+        }
+
+        .tag.fiesta {
+            background: var(--gold);
+        }
+
+        .tag.aventura {
+            background: var(--jade);
+        }
+
+        .tag.transito {
+            background: #7f8c8d;
+        }
+
+        /* MEDIA IMGS */
+        .hotel-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .hotel-info {
+            padding: 1.5rem;
+        }
+
+        .hotel-price {
+            font-size: 1.4rem;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--terracotta);
+            font-weight: 600;
+        }
+
+        .hotel-price span {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* BUDGET CALCULATOR */
+        .budget-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        @media (max-width: 768px) {
+            .budget-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--jade);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .calc-btn {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .calc-btn:hover {
+            background: #9b6140;
+        }
+
+        .result-box {
+            background: rgba(103, 146, 137, 0.1);
+            border: 2px solid var(--sage);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .total-price {
+            font-size: 3rem;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--jade);
+            margin: 1rem 0;
+        }
+
+        /* CHECKLIST */
+        .checklist-board {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: opacity 0.3s;
+        }
+
+        .check-item.completed span {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .check-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--jade);
+            cursor: pointer;
+        }
+
+        /* TABLES & LINKS */
+        .table-wrap {
+            overflow-x: auto;
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            color: var(--jade);
+            font-weight: 600;
+            background: rgba(103, 146, 137, 0.05);
+        }
+
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status.done {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status.pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status.searching {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        a.ticket-link {
+            display: inline-block;
+            background: var(--jade);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        a.ticket-link:hover {
+            opacity: 0.8;
+        }
+
+        a.ticket-link.airbnb {
+            background: #FF5A5F;
+        }
+
+        .price-col {
+            font-weight: 600;
+            color: var(--terracotta);
+        }
+
+        /* MAPA INTERACTIVO */
+        .map-wrapper {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        #mapa-interactivo-container {
+            height: 600px;
+            width: 100%;
+            border-radius: var(--radius-md);
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <h1>Southeast Asia Girls Trip 🌴✨</h1>
+        <p>26 Días de Aventura y Supervivencia Elegante</p>
+        <div class="trip-meta">
+            <div class="meta-pill">📅 15 Mar - 10 Abr</div>
+            <div class="meta-pill">👯‍♀️ Guille, Bian y Marti</div>
+            <div class="meta-pill">🎒 Estilo: Supervivencia Elegante (Max $2600)</div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" data-target="reservas-master">📑 Reservas Confirmadas</button>
+        <button class="tab-btn" data-target="grilla-tickets">🎟️ Grilla & Tickets</button>
+        <button class="tab-btn" data-target="mapa-vista" id="tab-map">🗺️ Visualizador GPS</button>
+        <button class="tab-btn" data-target="itinerario">📌 Resumen Ruta</button>
+        <button class="tab-btn" data-target="alojamientos">🏨 Bases Confirmadas</button>
+        <button class="tab-btn" data-target="vuelos">✈️ Logística</button>
+        <button class="tab-btn" data-target="presupuesto">💰 Calculadora</button>
+        <button class="tab-btn" data-target="checklist">📝 Checklist</button>
+    </nav>
+
+    <div class="container">
+
+        <!-- APARTADO MASTER: RESERVAS CONFIRMADAS (CRONOLOGÍA OFICIAL) -->
+        <section id="reservas-master" class="section active">
+            <h2 class="section-header">📑 Apartado de Reservas Confirmadas</h2>
+            <p style="margin-bottom: 1.5rem; color:var(--text-muted); max-width:850px;">
+                Cronología oficial de todas las compras y reservas aseguradas para el viaje, <strong>estrictamente ordenadas por fecha</strong> con sus localizadores, códigos PIN, comprobantes y costos reales.
+            </p>
+
+            <div class="table-wrap" style="box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 2rem;">
+                <table>
+                    <thead>
+                        <tr style="background-color: var(--jade); color: white;">
+                            <th style="width: 14%;">Fecha & Horario</th>
+                            <th style="width: 13%;">Tipo</th>
+                            <th style="width: 28%;">Detalle / Tramo / Propiedad</th>
+                            <th style="width: 22%;">Localizador / PIN / Ref.</th>
+                            <th style="width: 11%; text-align:right;">USD / Pax</th>
+                            <th style="width: 12%; text-align:center;">Acción / Voucher</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 1. LATAM INTERNACIONAL -->
+                        <tr>
+                            <td><strong>15 Mar - 10 Abr</strong></td>
+                            <td><span class="tag aventura">✈️ Vuelo Int.</span></td>
+                            <td><strong>LATAM Airlines (Ida y Vuelta)</strong><br><small style="color:var(--text-muted);">SCL/GRU ➔ SIN / SIN ➔ SCL/GRU</small></td>
+                            <td>LATAM Pass • Bodega 23kg</td>
+                            <td class="price-col" style="text-align:right;">$1,406</td>
+                            <td style="text-align:center;"><span class="status done">Pagado</span></td>
+                        </tr>
+                        <!-- 2. SINGAPUR AIRBNB -->
+                        <tr>
+                            <td><strong>15 al 16 Mar</strong><br><small style="color:var(--text-muted);">1 Noche (Check-in 15/03)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>Triple Room Boutique (Chinatown, Singapur)</strong><br><small style="color:var(--text-muted);">Total $80 USD (dividido 3)</small></td>
+                            <td>Airbnb: <code>#1783439296214182220</code></td>
+                            <td class="price-col" style="text-align:right;">$27</td>
+                            <td style="text-align:center;"><a href="https://www.airbnb.com.ar/trips/v1/1783439296214182220" target="_blank" class="ticket-link">Ver Airbnb</a></td>
+                        </tr>
+                        <!-- 3. SRI LANGIT HOTEL KLIA -->
+                        <tr>
+                            <td><strong>17 al 18 Mar</strong><br><small style="color:var(--text-muted);">1 Noche (Tránsito Malasia)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>Sri Langit Hotel KLIA (Malasia)</strong><br><small style="color:var(--text-muted);">Shuttle al aeropuerto incluido • Total $65 USD</small></td>
+                            <td>Booking Confirmado</td>
+                            <td class="price-col" style="text-align:right;">$22</td>
+                            <td style="text-align:center;"><a href="https://www.booking.com/hotel/my/sri-langit-klia.es-ar.html" target="_blank" class="ticket-link">Ver Booking</a></td>
+                        </tr>
+                        <!-- 4. AIRASIA VUELO KUL -> KRABI -->
+                        <tr style="background-color: #f0f7f5; border-left: 4px solid var(--jade);">
+                            <td><strong>18 Mar | 10:50 AM</strong><br><small style="color:var(--jade); font-weight:600;">Jueves (Salida KUL)</small></td>
+                            <td><span class="tag aventura">✈️ Vuelo Interno</span></td>
+                            <td><strong>AirAsia: Kuala Lumpur ➔ Krabi</strong><br><small style="color:var(--text-muted);">KUL ➔ KBV • Cabina 7kg • Total $175.79 USD</small></td>
+                            <td>Airpaz: <strong>1037964744</strong><br>Código PIN: <strong>69518</strong></td>
+                            <td class="price-col" style="text-align:right; font-weight:700; color:var(--jade);">$58</td>
+                            <td style="text-align:center;"><a href="https://www.airpaz.com/es/account/order/1037964744" target="_blank" class="ticket-link" style="background:var(--jade);">Orden Airpaz</a></td>
+                        </tr>
+                        <!-- 5. KRABI THE DREAM GARDEN -->
+                        <tr>
+                            <td><strong>18 al 20 Mar</strong><br><small style="color:var(--text-muted);">2 Noches (Ao Nang)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>The Dream Garden (Ao Nang, Krabi)</strong><br><small style="color:var(--text-muted);">Habitación Triple • Total $150 USD</small></td>
+                            <td>Booking Confirmado</td>
+                            <td class="price-col" style="text-align:right;">$50</td>
+                            <td style="text-align:center;"><a href="https://www.booking.com/hotel/th/the-dream-garden.es-ar.html" target="_blank" class="ticket-link">Ver Booking</a></td>
+                        </tr>
+                        <!-- 6. BANGKOK SURAYA HOTEL -->
+                        <tr>
+                            <td><strong>20 al 22 Mar</strong><br><small style="color:var(--text-muted);">2 Noches (Ciudad Vieja)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>Suraya Hotel Bangkok</strong><br><small style="color:var(--text-muted);">Boutique céntrico • Total $120 USD</small></td>
+                            <td>Booking Confirmado</td>
+                            <td class="price-col" style="text-align:right;">$40</td>
+                            <td style="text-align:center;"><a href="https://www.booking.com/hotel/th/suraya-bangkok-krungethph.es-ar.html" target="_blank" class="ticket-link">Ver Booking</a></td>
+                        </tr>
+                        <!-- 7. HANOI OLD QUARTER -->
+                        <tr>
+                            <td><strong>22 al 24 Mar</strong><br><small style="color:var(--text-muted);">2 Noches (Vietnam Norte)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>Hanói Old Quarter (Vietnam)</strong><br><small style="color:var(--text-muted);">Airbnb céntrico • Total $90 USD</small></td>
+                            <td>Airbnb: <code>#1783384935807422918</code></td>
+                            <td class="price-col" style="text-align:right;">$30</td>
+                            <td style="text-align:center;"><a href="https://www.airbnb.com.ar/trips/v1/1783384935807422918" target="_blank" class="ticket-link">Ver Airbnb</a></td>
+                        </tr>
+                        <!-- 8. NINH BINH WOW TAM COC 1 -->
+                        <tr>
+                            <td><strong>24 al 25 Mar</strong><br><small style="color:var(--text-muted);">1 Noche (Descanso)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>WOW Tam Coc 1 (Ninh Binh)</strong><br><small style="color:var(--text-muted);">Habitación Triple 45m2 con pileta • Total $45 USD</small></td>
+                            <td>Airbnb: <code>#1598976211183547003</code></td>
+                            <td class="price-col" style="text-align:right;">$15</td>
+                            <td style="text-align:center;"><a href="https://www.airbnb.com.ar/rooms/1598976211183547003" target="_blank" class="ticket-link">Ver Airbnb</a></td>
+                        </tr>
+                        <!-- 9. DA NANG MYAN -->
+                        <tr>
+                            <td><strong>25 al 27 Mar</strong><br><small style="color:var(--text-muted);">2 Noches (Vietnam Centro)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>MyAn Area Base (Da Nang)</strong><br><small style="color:var(--text-muted);">Zona surfera junto a la playa • Total $90 USD</small></td>
+                            <td>Airbnb: <code>#1364959517918249358</code></td>
+                            <td class="price-col" style="text-align:right;">$30</td>
+                            <td style="text-align:center;"><a href="https://www.airbnb.com.ar/rooms/1364959517918249358" target="_blank" class="ticket-link">Ver Airbnb</a></td>
+                        </tr>
+                        <!-- 10. HOI AN ANCIENT TOWN -->
+                        <tr>
+                            <td><strong>27 al 29 Mar</strong><br><small style="color:var(--text-muted);">2 Noches (Faroles)</small></td>
+                            <td><span class="tag cultural">🏨 Alojamiento</span></td>
+                            <td><strong>Ancient Town Edge (Hoi An)</strong><br><small style="color:var(--text-muted);">A 250m del Casco Histórico • Total $90 USD</small></td>
+                            <td>Airbnb Stay: <code>#HMQJQKDK5B</code></td>
+                            <td class="price-col" style="text-align:right;">$30</td>
+                            <td style="text-align:center;"><a href="https://www.airbnb.com.ar/book/confirmation/stays/HMQJQKDK5B" target="_blank" class="ticket-link">Ver Airbnb</a></td>
+                        </tr>
+                        <!-- SUBTOTAL -->
+                        <tr style="background-color: #e3f2e8;">
+                            <td colspan="4" style="text-align:right; font-weight:700; color:var(--jade);">TOTAL RESERVAS CONFIRMADAS HASTA LA FECHA (10 ITEMS):</td>
+                            <td style="text-align:right; font-weight:900; font-size:1.15rem; color:var(--jade);">$1,708</td>
+                            <td style="text-align:center; font-weight:700; color:var(--jade);">🟢 100% Blindado</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- GRILLA TICKETS -->
+        <section id="grilla-tickets" class="section">
+            <h2 class="section-header">Grilla Maestra: Horarios y Enlaces</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Día y Fecha</th>
+                            <th>Huso Horario</th>
+                            <th>Actividad / Movilidad</th>
+                            <th>Monto (USD/pers)</th>
+                            <th>Estado</th>
+                            <th>Enlace Directo / Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Vuelo Latam -->
+                        <tr>
+                            <td>Previo</td>
+                            <td>-</td>
+                            <td>Aterrizaje Vuelo Transpacífico de LATAM (Ida y Vuelta)</td>
+                            <td class="price-col">$1,406</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado</td>
+                            <td><span class="status done">Comprado</span></td>
+                        </tr>
+                        <!-- E-Visa -->
+                        <tr>
+                            <td>Previo</td>
+                            <td>-</td>
+                            <td>Tasa Visado E-Visa (Vietnam)</td>
+                            <td class="price-col">$25</td>
+                            <td style="color:var(--terracotta); font-weight:600;">🔴 Pendiente de Buscar</td>
+                            <td><a href="https://evisa.xuatnhapcanh.gov.vn/" target="_blank" class="ticket-link">Web
+                                    Oficial E-Visa</a></td>
+                        </tr>
+                        <!-- Singapur -->
+                        <tr style="background-color: var(--cream);">
+                            <td colspan="6" style="text-align:center; font-weight:600; color:var(--jade);">1. SINGAPUR &
+                                MALASIA</td>
+                        </tr>
+                        <tr>
+                            <td>Días 1-3 (15-17 Mar)</td>
+                            <td>Base</td>
+                            <td>Alojamiento Singapur (Chinatown) + Comidas locales + Transporte</td>
+                            <td class="price-col">~$110</td>
+                            <td style="color:var(--text-muted); font-weight:600;">🔵 Estimación Base</td>
+                            <td><span class="status done">Promedio Total</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 2 (16 Mar)</td>
+                            <td>10:00 hs</td>
+                            <td>Entrada Universal Studios Singapore (Lo sacamos en diciembre)</td>
+                            <td class="price-col">$68</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente de Reserva</td>
+                            <td><a href="https://www.klook.com" target="_blank" class="ticket-link">Comprar
+                                    Universal</a></td>
+                        </tr>
+                        <tr>
+                            <td>Día 3 (17 Mar)</td>
+                            <td>23:00 hs</td>
+                            <td>Micro Nocturno Singapur ➔ KL + Sri Langit Hotel KLIA + Comidas</td>
+                            <td class="price-col">~$70</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Bus Pendiente (Hotel OK)</td>
+                            <td><a href="https://12go.asia/es/travel/singapore/kuala-lumpur" target="_blank"
+                                    class="ticket-link">Ticket Bus Tren</a></td>
+                        </tr>
+                        <!-- Tailandia -->
+                        <tr style="background-color: var(--cream);">
+                            <td colspan="6" style="text-align:center; font-weight:600; color:var(--jade);">2. TAILANDIA
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Día 4 (18 Mar)</td>
+                            <td>10:50 AM</td>
+                            <td>Vuelo AirAsia: KUL a Krabi (KBV)</td>
+                            <td class="price-col">$58</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado</td>
+                            <td><a href="https://www.airpaz.com/es/account/order/1037964744"
+                                    target="_blank" class="ticket-link" style="background:var(--jade);">Airpaz #1037964744 (PIN: 69518)</a></td>
+                        </tr>
+                        <tr>
+                            <td>Días 4-5 (18-19 Mar)</td>
+                            <td>Base</td>
+                            <td>The Dream Garden (2 noches) + Comidas + Excursión Phi Phi + Bote Railay</td>
+                            <td class="price-col">~$131</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente de Reserva</td>
+                            <td><span class="status done">Aloj.+Tours Krabi</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 6 (20 Mar)</td>
+                            <td>11:00 AM</td>
+                            <td>Vuelo Interno Omio: Krabi a Bangkok</td>
+                            <td class="price-col">$45</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente de Reserva</td>
+                            <td><a href="https://www.omio.es/app/search-frontend/journey/flight/-2120011215/E647CD6BAA90B45FBABADBEEA393F664E/3592768972069416968?locale=es"
+                                    target="_blank" class="ticket-link airbnb">Ver Omio Ticket</a></td>
+                        </tr>
+                        <tr>
+                            <td>Días 6-7 (20-21 Mar)</td>
+                            <td>Base</td>
+                            <td>Suraya Hotel (2 noches) + Comidas + Entradas Templos (Arun/Pho/Palace)</td>
+                            <td class="price-col">~$90</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado</td>
+                            <td><span class="status done">Base Bangkok</span></td>
+                        </tr>
+                        <!-- Vietnam -->
+                        <tr style="background-color: var(--cream);">
+                            <td colspan="6" style="text-align:center; font-weight:600; color:var(--jade);">3. VIETNAM
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Día 8 (22 Mar)</td>
+                            <td>07:45 AM</td>
+                            <td>Vuelo AirAsia (BKK->HAN) + Lago Hoàn Kiếm y Train Street</td>
+                            <td class="price-col">~$62</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente Vuelo</td>
+                            <td><span class="status done">Hanói (Base)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 9 (23 Mar)</td>
+                            <td>Excursión</td>
+                            <td>Full Day Ha Long Bay (Crucero/Kayak/Cuevas) + Retorno a capital</td>
+                            <td class="price-col">~$55</td>
+                            <td style="color:var(--terracotta); font-weight:600;">🔴 Pendiente Tour</td>
+                            <td><span class="status done">Hanói (Base)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 10 (24 Mar)</td>
+                            <td>Despliegue</td>
+                            <td>Traslado a Ninh Binh + Trang An Mua Cave</td>
+                            <td class="price-col">~$35</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado (Airbnb)</td>
+                            <td><span class="status done">Ninh Binh (Base)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 11 (25 Mar)</td>
+                            <td>Tránsito</td>
+                            <td>Retorno al Norte + Vuelo Interno: Hanói (HAN) -> Da Nang (DAD)</td>
+                            <td class="price-col">~$50</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente Vuelo</td>
+                            <td><span class="status done">Da Nang (Base)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 12 (26 Mar)</td>
+                            <td>Diurno</td>
+                            <td>Caminata Marble Mountains + Playa + Dragon Bridge Noche</td>
+                            <td class="price-col">~$35</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado (Airbnb)</td>
+                            <td><span class="status done">Da Nang (Base)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 13 (27 Mar)</td>
+                            <td>Diurno</td>
+                            <td>Despliegue al Sur: Hoi An Casco Histórico + Mercado y Faroles</td>
+                            <td class="price-col">~$40</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado (Airbnb)</td>
+                            <td><span class="status done">Hoi An (Base)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 14 (28 Mar)</td>
+                            <td>Diurno</td>
+                            <td>(Día Extra) Full Day Hoi An Relajación Total</td>
+                            <td class="price-col">~$15</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado (Airbnb)</td>
+                            <td><span class="status done">Hoi An Extra</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 15 (29 Mar)</td>
+                            <td>A.M.</td>
+                            <td>Vuelo Multipista: Da Nang (DAD) -> Filipinas</td>
+                            <td class="price-col">~$150</td>
+                            <td style="color:var(--terracotta); font-weight:600;">🔴 Buscar Vuelo</td>
+                            <td><span class="status done">Retirada</span></td>
+                        </tr>
+
+                        <!-- INDONESIA -->
+                        <tr style="background-color: var(--cream);">
+                            <td colspan="6" style="text-align:center; font-weight:600; color:var(--jade);">4. FASE
+                                INDONESIA (BALI)</td>
+                        </tr>
+                        <tr>
+                            <td>Día 14 (28 Mar)</td>
+                            <td>12:20 PM</td>
+                            <td>Vuelo Multidestino: Da Nang (DAD) -> Bali (DPS)</td>
+                            <td class="price-col">~$150</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente de Pago</td>
+                            <td><a href="https://www.google.com/travel/flights/booking?tfs=CBwQAhpuEgoyMDI3LTAzLTI4Ih8KA0RBRBIKMjAyNy0wMy0yOBoDU0dOKgJWTjIDMTAxIh8KA1NHThIKMjAyNy0wMy0yOBoDRFBTKgJWTjIDNjQxag0IAxIJL20vMDI2eXFmcg8IAhILL2cvMTIxaHhoMWpAAUgBcAGCAQsI____________AZgBAg&tfu=CnRDalJJTlhCc2JrRlhXazFqV1dkQlRVSlNabWRDUnkwdExTMHRMUzB0WTJWaE15MXVNVUZCUVVGQlIzRjNVRkZCUTNWNmVtbEJFZ3RXVGpFd01YeFdUalkwTVJvTENLV05BUkFDR2dOVlUwUTRISENsalFFPRICCAAiAA&hl=es-419&gl=AR&curr=USD"
+                                    target="_blank" class="ticket-link"
+                                    style="background-color: var(--gold); color: black;">Ver Link Google</a></td>
+                        </tr>
+                        <tr>
+                            <td>Días 14-19 (28 Mar - 3 Abr)</td>
+                            <td>Base</td>
+                            <td>Alojamiento Bali (6 noches) + Moto/Transporte</td>
+                            <td class="price-col">~$160</td>
+                            <td style="color:var(--terracotta); font-weight:600;">🔴 Pendiente de Buscar</td>
+                            <td><span class="status done">Centro Hindú</span></td>
+                        </tr>
+                        <!-- FILIPINAS -->
+                        <tr style="background-color: var(--cream);">
+                            <td colspan="6" style="text-align:center; font-weight:600; color:var(--jade);">5. FASE
+                                FILIPINAS (PALAWAN)</td>
+                        </tr>
+                        <tr>
+                            <td>Día 20 (3 Abr)</td>
+                            <td>08:35 AM</td>
+                            <td>Vuelo Cebu Pacific: Bali (DPS) -> Puerto Princesa (PPS)</td>
+                            <td class="price-col">~$150</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente de Pago</td>
+                            <td><a href="https://www.google.com/travel/flights/s/QpuTa345rAgRgvy76" target="_blank"
+                                    class="ticket-link" style="background-color: var(--gold); color: black;">Ver Link
+                                    Google</a></td>
+                        </tr>
+                        <tr>
+                            <td>Días 20-21 (3-5 Abr)</td>
+                            <td>Base</td>
+                            <td>Alojamiento Puerto Princesa (2 noches) + Underground River Tour</td>
+                            <td class="price-col">~$65</td>
+                            <td style="color:var(--terracotta); font-weight:600;">🔴 Pendiente de Buscar</td>
+                            <td><span class="status done">Nodo Central</span></td>
+                        </tr>
+                        <tr>
+                            <td>Días 22-23 (5-7 Abr)</td>
+                            <td>Base</td>
+                            <td>Alojamiento El Nido (2 noches) + Tours Marítimos A y C</td>
+                            <td class="price-col">~$80</td>
+                            <td style="color:var(--terracotta); font-weight:600;">🔴 Pendiente de Buscar</td>
+                            <td><span class="status done">Nodo Norte</span></td>
+                        </tr>
+                        <tr>
+                            <td>Días 24-25 (7-9 Abr)</td>
+                            <td>Base</td>
+                            <td>Alojamiento Coron (2 noches) + Ferry + Coron Explorer Tour</td>
+                            <td class="price-col">~$90</td>
+                            <td style="color:var(--terracotta); font-weight:600;">🔴 Pendiente de Buscar</td>
+                            <td><span class="status done">Nodo Extremo</span></td>
+                        </tr>
+                        <!-- CIERRE -->
+                        <tr style="background-color: var(--cream);">
+                            <td colspan="6" style="text-align:center; font-weight:600; color:var(--jade);">6. RETORNO Y
+                                CIERRE</td>
+                        </tr>
+                        <tr>
+                            <td>Día 26 (9 Abr)</td>
+                            <td>03:40 PM</td>
+                            <td>Vuelo Cebu Pacific Retorno: Coron (USU) -> Singapur (SIN)</td>
+                            <td class="price-col">~$148</td>
+                            <td style="color:var(--gold); font-weight:600;">🟡 Pendiente de Pago</td>
+                            <td><a href="https://www.google.com/travel/flights/s/jd6DrXhHafP8r222A" target="_blank"
+                                    class="ticket-link" style="background-color: var(--gold); color: black;">Ver Link
+                                    Google</a></td>
+                        </tr>
+                        <tr>
+                            <td>Días 26-27 (9-10 Abr)</td>
+                            <td>Base</td>
+                            <td>Singapur Final (1 Noche Alojamiento + Traslados/Comida)</td>
+                            <td class="price-col">~$70</td>
+                            <td style="color:var(--text-muted); font-weight:600;">🔵 Estimación Base</td>
+                            <td><span class="status done">Despedida</span></td>
+                        </tr>
+                        <tr>
+                            <td>Día 27 (10 Abr)</td>
+                            <td>23:00 hs</td>
+                            <td>Vuelo Internacional de Regreso (Singapur -> América)</td>
+                            <td class="price-col">-</td>
+                            <td style="color:var(--jade); font-weight:600;">🟢 Reservado (Latam)</td>
+                            <td><span class="status done">Fin del Viaje</span></td>
+                        </tr>
+                        <!-- TOTALES -->
+                        <tr style="background-color: var(--jade); color: var(--cream);">
+                            <td colspan="3"
+                                style="text-align:right; font-weight:700; font-size:1.1rem; font-family:'Inter', sans-serif;">
+                                COSTO TOTAL PROYECTADO POR PERSONA (Pasaj. Incluidos):</td>
+                            <td class="price-col" style="color:var(--gold); font-size:1.3rem;">~$3,210</td>
+                            <td colspan="2" style="font-size:0.8rem; font-weight:300; text-align:right;">*El desvío del
+                                presupuesto inicial responde al enorme peso logístico y bi-insular de Filipinas + Bali.*
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- MAPA INTERACTIVO GEO -->
+        <section id="mapa-vista" class="section">
+            <h2 class="section-header">Visualizador GPS del Master-Plan</h2>
+            <p style="margin-bottom: 1.5rem;">Explora los nodos geográficos conectados del viaje. (Acerca el mapa y
+                navega interactuando).</p>
+            <div class="map-wrapper">
+                <div id="mapa-interactivo-container"></div>
+            </div>
+        </section>
+
+        <!-- ITINERARIO -->
+        <section id="itinerario" class="section">
+            <h2 class="section-header">Itinerario General Ajustado</h2>
+            <div class="itinerary-grid" id="itinerary-list">
+                <!-- Singapur -->
+                <div class="itinerary-card" data-category="aventura">
+                    <span class="day-badge">Día 1-2 | 15-16 Mar</span>
+                    <span class="tag aventura">Singapur Express</span>
+                    <h3>Universal Studios & Chinatown</h3>
+                    <p>Llegada el 15/Mar (17:00). Nos instalamos en el Airbnb de Chinatown. Noche de show gratis en el
+                        parque de los super árboles. Día 16 completo en Universal, cenamos en Bugis y agarramos las
+                        mochilas.</p>
+                </div>
+                <!-- Malasia -->
+                <div class="itinerary-card" data-category="cultural">
+                    <span class="day-badge">Día 3 | 17 Mar</span>
+                    <span class="tag cultural">Expedición Urbana</span>
+                    <h3>Kuala Lumpur Relámpago</h3>
+                    <p>Tras llegar de madrugada a Hentian Duta, visitan las cuevas místicas Batu, luego sacan foto ante
+                        las Petronas. Cierre inmejorable comiendo en la calle Jalan Alor para marcharse a dormir a Bell
+                        Suites.</p>
+                </div>
+                <!-- Tailandia/Krabi -->
+                <div class="itinerary-card" data-category="transito">
+                    <span class="day-badge">Día 4-5 | 18-19 Mar</span>
+                    <span class="tag transito">Salto Marítimo</span>
+                    <h3>Aventura Total en Krabi</h3>
+                    <p>Llegada el Día 4 y directos al bote tradicional cruzando a las cuevas de Railay Beach. Al día 5
+                        un recorrido en lancha rápida visitando a primera hora la mítica playa Maya Bay (Phi Phi
+                        Islands).</p>
+                </div>
+                <!-- Bangkok -->
+                <div class="itinerary-card" data-category="cultural">
+                    <span class="day-badge">Día 6 al 8 | 20-22 Mar</span>
+                    <span class="tag cultural">Expedición Urbana Final</span>
+                    <h3>Locura Asiática en BKK</h3>
+                    <p>Dos días aniquiladores en la Capital. Tumbamos los Templos Wat Arun/Pho, cenamos en Chinatown y
+                        arrasamos el Mercado Chatuchak. Dormimos 2 noches en la ciudad vieja y cerramos la etapa
+                        Tailandesa el Día 8 volando hacia Vietnam.</p>
+                </div>
+                <!-- Vietnam -->
+                <div class="itinerary-card" data-category="aventura">
+                    <span class="day-badge">Día 8-16 | 22-31 Mar</span>
+                    <span class="tag aventura">El Norte Místico y Centro</span>
+                    <h3>Travesía Hanói a Da Nang</h3>
+                    <p>¡Aterrizaje en Hanói! Arrancamos 7 días épicos por el norte: Train Street, despliegue a las
+                        cuevas de Ninh Binh, y noche a bordo de crucero en Ha Long Bay, coronando con vuelo interno
+                        hacia los farolitos de Hoi An y las montañas de Da Nang.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ALOJAMIENTOS -->
+        <section id="alojamientos" class="section">
+            <h2 class="section-header">Bases de Reposo Oficiales</h2>
+            <div class="hotel-grid">
+                <div class="hotel-card" style="border-left: 4px solid var(--jade);">
+                    <img src="https://images.unsplash.com/photo-1549294413-26f195200c16?auto=format&fit=crop&w=600&q=80"
+                        alt="Singapur Airbnb" class="hotel-img">
+                    <div class="hotel-info">
+                        <h3>Triple Room Boutique</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 Singapur
+                            (Chinatown)</p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>1 Sola Noche (15 al 16 Mar)</li>
+                            <li>Táctica MRT Insuperable</li>
+                            <li>Costo Real Total: $80 USD</li>
+                        </ul>
+                        <div class="hotel-price">~$27 USD <span>/pers noche</span></div>
+                        <a href="https://www.airbnb.com.ar/trips/v1/1783439296214182220" target="_blank"
+                            class="ticket-link"
+                            style="background:var(--jade); margin-top:1rem; width:100%; text-align:center;">Ver
+                            Confirmación</a>
+                    </div>
+                </div>
+
+                <div class="hotel-card" style="border-left: 4px solid var(--jade);">
+                    <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80"
+                        alt="Sri Langit KLIA" class="hotel-img">
+                    <div class="hotel-info">
+                        <h3>Sri Langit Hotel KLIA</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 KLIA2 & F1 Shuttle
+                            (Malasia)</p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>Noche de tránsito (17 al 18 Mar)</li>
+                            <li>Incluye servicio de Shuttle (Vuelo a Krabi)</li>
+                            <li>Confirmado Definitivo ($65 USD)</li>
+                        </ul>
+                        <div class="hotel-price">~$22 USD <span>/pers noche</span></div>
+                        <a href="https://www.booking.com/hotel/my/sri-langit-klia.es-ar.html" target="_blank"
+                            class="ticket-link"
+                            style="background:var(--jade); margin-top:1rem; width:100%; text-align:center;">Ver
+                            Confirmación</a>
+                    </div>
+                </div>
+
+                <div class="hotel-card" style="border-left: 4px solid #FF3B30;">
+                    <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
+                        alt="The Dream Garden Krabi" class="hotel-img">
+                    <div class="hotel-info">
+                        <span class="tag" style="background: #FF3B30;">🔴 ALERTA: 1 HABITACIÓN RESTANTE</span>
+                        <h3>The Dream Garden</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 Confirmado: Ao
+                            Nang, Krabi</p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>Triple Espectacular ($150 total / 2 Noches)</li>
+                            <li>Táctica central frente a botes de Phi Phi</li>
+                            <li>Reserva inminente requerida</li>
+                        </ul>
+                        <div class="hotel-price">~$25 USD <span>/pers noche</span></div>
+                        <a href="https://www.booking.com/hotel/th/the-dream-garden.es-ar.html" target="_blank"
+                            class="ticket-link"
+                            style="background:#003580; margin-top:1rem; width:100%; text-align:center;">👉 Click para
+                            Reservar YA</a>
+                    </div>
+                </div>
+
+                <div class="hotel-card" style="border-left: 4px solid var(--gold);">
+                    <img src="https://images.unsplash.com/photo-1561501900-3701fa6a0864?auto=format&fit=crop&w=600&q=80"
+                        alt="Suraya Hotel Bangkok" class="hotel-img">
+                    <div class="hotel-info">
+                        <h3>Suraya Hotel Bangkok</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 Base BKK
+                            Confirmada: Suraya Hotel</p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>Boutique súper aesthetic ("Supervivencia Elegante")</li>
+                            <li>Paz absoluta, pero a cuadras de Khao San</li>
+                            <li>Caminata directa al Gran Palacio y Wat Pho</li>
+                        </ul>
+                        <div class="hotel-price">~$20 USD <span>/pers noche</span></div>
+                        <a href="https://www.booking.com/hotel/th/suraya-bangkok-krungethph.es-ar.html" target="_blank"
+                            class="ticket-link"
+                            style="background:var(--terracotta); margin-top:1rem; width:100%; text-align:center;">Abrir
+                            Link de Reserva</a>
+                    </div>
+                </div>
+
+                <div class="hotel-card" style="border-left: 4px solid var(--jade);">
+                    <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80"
+                        alt="Hanoi Confirmed" class="hotel-img">
+                    <div class="hotel-info">
+                        <h3>Hanói Old Quarter</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 Hanoi, Vietnam</p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>Base Logística (22 al 24 Mar)</li>
+                            <li>Confirmado Definitivo</li>
+                        </ul>
+                        <div class="hotel-price">~$15 USD <span>/pers noche</span></div>
+                        <a href="https://www.airbnb.com.ar/trips/v1/1783384935807422918" target="_blank"
+                            class="ticket-link"
+                            style="background:var(--jade); margin-top:1rem; width:100%; text-align:center;">Ver
+                            Confirmación</a>
+                    </div>
+                </div>
+
+                <div class="hotel-card" style="border-left: 4px solid var(--jade);">
+                    <img src="https://images.unsplash.com/photo-1590211246731-8f5eb23b03f0?auto=format&fit=crop&w=600&q=80"
+                        alt="Ninh Binh Wow" class="hotel-img">
+                    <div class="hotel-info">
+                        <h3>WOW Tam Coc 1</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 Ninh Binh, Vietnam
+                        </p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>Descanso Rústico con Pileta (24 al 25 Mar)</li>
+                            <li>Habitación Triple 45m2</li>
+                        </ul>
+                        <div class="hotel-price">~$15 USD <span>/pers noche</span></div>
+                        <a href="https://www.airbnb.com.ar/rooms/1598976211183547003" target="_blank"
+                            class="ticket-link"
+                            style="background:var(--jade); margin-top:1rem; width:100%; text-align:center;">Ver
+                            Confirmación</a>
+                    </div>
+                </div>
+
+                <div class="hotel-card" style="border-left: 4px solid var(--jade);">
+                    <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80"
+                        alt="Da Nang My An" class="hotel-img">
+                    <div class="hotel-info">
+                        <h3>MyAn Area Base</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 Da Nang, Vietnam
+                        </p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>Zona Surfera y Playera (25 al 27 Mar)</li>
+                            <li>A pasos del mar oriental</li>
+                        </ul>
+                        <div class="hotel-price">~$15 USD <span>/pers noche</span></div>
+                        <a href="https://www.airbnb.com.ar/rooms/1364959517918249358" target="_blank"
+                            class="ticket-link"
+                            style="background:var(--jade); margin-top:1rem; width:100%; text-align:center;">Ver
+                            Confirmación</a>
+                    </div>
+                </div>
+
+                <div class="hotel-card" style="border-left: 4px solid var(--jade);">
+                    <img src="https://images.unsplash.com/photo-1563223771-5fe403c9fb60?auto=format&fit=crop&w=600&q=80"
+                        alt="Hoi An Ancient" class="hotel-img">
+                    <div class="hotel-info">
+                        <h3>Ancient Town Edge</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">📍 Hoi An, Vietnam</p>
+                        <ul style="margin-left: 1rem; margin-bottom: 1rem; font-size:0.9rem;">
+                            <li>A 250mts de los Faroles (27 al 29 Mar)</li>
+                            <li>Confirmación Definitiva</li>
+                        </ul>
+                        <div class="hotel-price">~$15 USD <span>/pers noche</span></div>
+                        <a href="https://www.airbnb.com.ar/book/confirmation/stays/HMQJQKDK5B" target="_blank"
+                            class="ticket-link"
+                            style="background:var(--jade); margin-top:1rem; width:100%; text-align:center;">Ver
+                            Confirmación</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VUELOS/BUSES -->
+        <section id="vuelos" class="section">
+            <h2 class="section-header">Estructura Logística</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tramo / Ruta</th>
+                            <th>Medio / Operador</th>
+                            <th>Reglas de Equipaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>San Pablo / SCL -> SIN</td>
+                            <td>Latam Pass</td>
+                            <td>Bodega Pesada 23KG</td>
+                        </tr>
+                        <tr>
+                            <td>Singapur -> Malasia (KL)</td>
+                            <td>Micro Nocturno Fronterizo VIP</td>
+                            <td>Bodega Ilimitada</td>
+                        </tr>
+                        <tr>
+                            <td>Malasia (KUL) -> Krabi (KBV) [18 Mar 10:50 AM]</td>
+                            <td>AirAsia (Airpaz #1037964744 • PIN: 69518)</td>
+                            <td>7Kg Cabina | 🟢 Confirmado ($58 USD/u)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PRESUPUESTO MASTER -->
+        <section id="presupuesto" class="section">
+            <h2 class="section-header">Balance Maestro de Supervivencia</h2>
+            <p
+                style="margin-bottom: 2rem; color:var(--text-muted); max-width:800px; margin-left:auto; margin-right:auto; text-align:center;">
+                Detalle milimétrico del presupuesto por persona. En <strong style="color:var(--jade);">verde</strong> lo
+                que ya está pagado/reservado, y en <strong style="color:var(--terracotta);">rojo</strong> el estimado
+                operativo que falta cubrir hasta el final de la ruta.</p>
+
+            <div class="table-wrap" style="max-width: 900px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <!-- GASTOS FIJOS COMPLETADOS (VERDES) -->
+                <table style="margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+                    <thead>
+                        <tr style="background-color: var(--jade); color: white;">
+                            <th style="width: 20%;">Categoría</th>
+                            <th style="width: 45%;">Detalle Específico (Confirmado)</th>
+                            <th style="width: 15%;">Estado</th>
+                            <th style="width: 20%; text-align:right;">USD / Persona</th>
+                        </tr>
+                    </thead>
+                    <tbody style="background-color: #f7fbf8;">
+                        <tr>
+                            <td><strong>Vuelo Fuerte</strong></td>
+                            <td>TKT Internacional (Latam) Ida y Vuelta a Singapur</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Pagado</td>
+                            <td style="text-align:right; font-weight:600;">$1,406</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Punto Cero: Singapur, Chinatown (1 Noche)</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$27</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Tránsito: Sri Langit KLIA, Malasia (1 Noche) [17-18 Mar]</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$22</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vuelo Interno</strong></td>
+                            <td>Malasia (KUL) -> Krabi (AirAsia / 18 Mar 10:50 AM) - Airpaz #1037964744</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Pagado</td>
+                            <td style="text-align:right; font-weight:600;">$58</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Krabi (The Dream Garden) - 2 Noches [18-20 Mar]</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$50</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Bangkok (Suraya Hotel) - 2 Noches [20-22 Mar]</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$40</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Hanói (Airbnb Old Quarter) - 2 Noches [22-24 Mar]</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$30</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Ninh Binh (WOW Tam Coc 1) - 1 Noche [24-25 Mar]</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$15</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Da Nang (Airbnb MyAn) - 2 Noches [25-27 Mar]</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$30</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Hoi An (Airbnb Edge) - 2 Noches [27-29 Mar]</td>
+                            <td style="color:var(--jade); font-weight:700;">🟢 Reservado</td>
+                            <td style="text-align:right; font-weight:600;">$30</td>
+                        </tr>
+                        <tr style="background-color: #e3f2e8;">
+                            <td colspan="3" style="text-align:right; font-weight:700; color:var(--jade);">SUBTOTAL
+                                GASTADO HASTA AHORA:</td>
+                            <td style="text-align:right; font-weight:900; font-size:1.1rem; color:var(--jade);">$1,708
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- GASTOS ESTIMADOS FALTANTES (ROJOS) -->
+                <table style="border-top-left-radius: 0; border-top-right-radius: 0; border-top: none;">
+                    <thead>
+                        <tr style="background-color: var(--terracotta); color: white;">
+                            <th style="width: 20%;">Categoría</th>
+                            <th style="width: 45%;">Detalle Específico (Proyección Restante)</th>
+                            <th style="width: 15%;">Estado</th>
+                            <th style="width: 20%; text-align:right;">USD / Persona</th>
+                        </tr>
+                    </thead>
+                    <tbody style="background-color: #fffaf9;">
+                        <tr>
+                            <td><strong>Vuelo Interno</strong></td>
+                            <td>Krabi -> Bangkok (Thai Lion Air / 20 Mar)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Pendiente</td>
+                            <td style="text-align:right; font-weight:600;">~$45</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vuelo Interno</strong></td>
+                            <td>Bangkok -> Hanói (Despliegue a Vietnam)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Pendiente</td>
+                            <td style="text-align:right; font-weight:600;">~$75</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vuelo Interno</strong></td>
+                            <td>Hanói -> Da Nang (VietJet / 25 Mar)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Pendiente</td>
+                            <td style="text-align:right; font-weight:600;">~$56</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vuelo Interno</strong></td>
+                            <td>Da Nang -> Filipinas / Islas</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Pendiente</td>
+                            <td style="text-align:right; font-weight:600;">~$150</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vuelo Interno</strong></td>
+                            <td>Islas -> Singapur (Vuelo de Cierre)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Pendiente</td>
+                            <td style="text-align:right; font-weight:600;">~$155</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alojamiento</strong></td>
+                            <td>Bloque Insular: Filipinas o Bali (11 Noches)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Pendiente</td>
+                            <td style="text-align:right; font-weight:600;">~$165</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Excursiones Base</strong></td>
+                            <td>Tours Mayores (Botes Krabi, Ha Long Bay, Coron)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Proyectado</td>
+                            <td style="text-align:right; font-weight:600;">~$200</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Costos Migratorios</strong></td>
+                            <td>E-Visa de Vietnam (Pago Oficial Seguro)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Proyectado</td>
+                            <td style="text-align:right; font-weight:600;">~$25</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Movilidad In-Situ (Grabs)</strong></td>
+                            <td>+15 Taxis Totales a Aeropuertos / Hoteles (Dividido x 3)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Tránsito Libre</td>
+                            <td style="text-align:right; font-weight:600;">~$75</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Movilidad Inter-Ciudad</strong></td>
+                            <td>Tren en Ninh Binh y botes Longtail hacia Railay Beach</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Tránsito Libre</td>
+                            <td style="text-align:right; font-weight:600;">~$30</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Supervivencia (Culinaria)</strong></td>
+                            <td>Presupuesto Comida Asiática (29 Días Clavados @ $18/día)</td>
+                            <td style="color:var(--terracotta); font-weight:700;">🔴 Proyectado</td>
+                            <td style="text-align:right; font-weight:600;">~$522</td>
+                        </tr>
+                        <tr style="background-color: #ffebe6;">
+                            <td colspan="3" style="text-align:right; font-weight:700; color:var(--terracotta);">CAJA
+                                ESTIMADA QUE FALTA CARGAR:</td>
+                            <td style="text-align:right; font-weight:900; font-size:1.1rem; color:var(--terracotta);">
+                                $1,498</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TOTAL FINANCIERO ABSOLUTO -->
+            <div
+                style="max-width: 900px; margin: 2rem auto 0 auto; background-color: var(--midnight); color: var(--gold); border-radius: 12px; padding: 2rem; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <h3
+                    style="margin-bottom: 0.5rem; font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 1.5rem; color: white;">
+                    INVERSIÓN TOTAL PROYECTADA (AL CIERRE DEL VIAJE)</h3>
+                <div style="font-size: 3.5rem; font-weight: 700; line-height: 1;">$3,206 <span
+                        style="font-size: 1.2rem; font-weight: 300; opacity: 0.8;">USD / Pasajera</span></div>
+                <p style="margin-top: 1rem; color: #a1b0b5; font-size: 0.9rem;">*La ecuación asume un comportamiento
+                    estratégico en las islas y divisiones simétricas de tres entre Airbnbs y Taxis.*</p>
+            </div>
+        </section>
+
+        <!-- CHECKLIST -->
+        <section id="checklist" class="section">
+            <h2 class="section-header">Documentación Fronteriza</h2>
+            <div class="checklist-board">
+                <label class="check-item"><input type="checkbox"><span><strong>Fiebre Amarilla:</strong> Cartón amarillo
+                        indispensable para Tailandia/Malasia.</span></label>
+                <label class="check-item"><input type="checkbox"><span><strong>E-Visa Verificada:</strong> Gestión
+                        terminada para entrar a Vietnam online.</span></label>
+                <label class="check-item"><input type="checkbox"><span><strong>Efectivo Dólares Físico:</strong>
+                        Billetes nuevos sin rayones (Tailandia no acepta billetes viejos).</span></label>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- LEAFLET Y SCRIPTS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // LAZY LOAD MAP LOGIC
+            let mapInitialized = false;
+            let theMap;
+
+            function initTrackerMap() {
+                if (mapInitialized) return;
+
+                // Inicializar mapa de Leaflet centrado en el archipiélago malayo/tailandés
+                theMap = L.map('mapa-interactivo-container').setView([4.5, 101], 5);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 18,
+                    attribution: '&copy; CartoDB'
+                }).addTo(theMap);
+
+                // Coordenadas Reales de los Nodos Confirmados
+                const pSIN = [1.2823, 103.8443];  // Singapur
+                const pKUL = [3.1580, 101.7116];  // Kuala Lumpur
+                const pKBV = [8.0366, 98.8166];   // Krabi
+                const pBKK = [13.7563, 100.5018]; // Bangkok
+                const pHAN = [21.0285, 105.8542]; // Hanoi (Vietnam Norte)
+                const pNIN = [20.2539, 105.9750]; // Ninh Binh (Vietnam)
+                const pHAL = [20.8449, 107.0805]; // Ha Long Bay (Vietnam)
+                const pDAD = [16.0544, 108.2022]; // Da Nang (Centro de Vietnam)
+                const pDPS = [-8.7482, 115.1678]; // Bali (Indonesia)
+                const pPPS = [9.7423, 118.7369];  // Puerto Princesa
+
+                // Iconos y Nodos Custom
+                L.marker(pSIN).addTo(theMap).bindPopup("<b>⚓ Punto Cero y Retorno: Singapur</b><br>Hub central de LATAM.").openPopup();
+                L.marker(pKUL).addTo(theMap).bindPopup("<b>🏙️ Día 3: Kuala Lumpur</b><br>Batu Caves.");
+                L.marker(pKBV).addTo(theMap).bindPopup("<b>🏝️ Día 4: Krabi (Sur)</b><br>Phi Phi y Railay.");
+                L.marker(pBKK).addTo(theMap).bindPopup("<b>🍜 Día 6+: Bangkok</b><br>Capital Tailandesa.");
+                L.marker(pHAN).addTo(theMap).bindPopup("<b>☕ Día 8: Hanói</b><br>Llegada al Norte Místico de Vietnam.");
+                L.marker(pNIN).addTo(theMap).bindPopup("<b>🛶 Día 10: Ninh Binh</b><br>Trang An y Mua Cave.");
+                L.marker(pHAL).addTo(theMap).bindPopup("<b>🌊 Día 9: Ha Long Bay</b><br>Embarque en crucero diurno.");
+                L.marker(pDAD).addTo(theMap).bindPopup("<b>🌉 Día 11+: Da Nang y Hoi An</b><br>Vuelo interno hacia los faroles del centro.");
+                L.marker(pDPS).addTo(theMap).bindPopup("<b>🌋 Día X: Bali (Pendiente)</b><br>A definir tras cambio de vuelo Filipinas.");
+                L.marker(pPPS).addTo(theMap).bindPopup("<b>🪸 Día 22+: Palawan (Filipinas)</b><br>Cierre en El Nido y Coron.");
+
+                // Conector (Línea de Ruta) Animado y estilizado cerrando el loop hacia Singapur
+                const flightRoute = L.polyline([pSIN, pKUL, pKBV, pBKK, pHAN, pNIN, pHAL, pHAN, pDAD, pDPS, pPPS, pSIN], {
+                    color: '#b97a56', /* Terracota del Tema */
+                    weight: 3,
+                    dashArray: '10, 10',
+                    opacity: 0.8
+                }).addTo(theMap);
+
+                // Centrar automáticamente en la ruta cuando cargue
+                setTimeout(() => {
+                    theMap.fitBounds(flightRoute.getBounds(), { padding: [50, 50] });
+                }, 300);
+
+                mapInitialized = true;
+            }
+
+            // TABS LOGIC
+            const tabs = document.querySelectorAll('.tab-btn');
+            const sections = document.querySelectorAll('.section');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    const targetId = tab.getAttribute('data-target');
+                    document.getElementById(targetId).classList.add('active');
+
+                    // Si el usuario toca el tab del Mapa Interactivo, iniciarlo/redimensionarlo.
+                    if (targetId === 'mapa-vista') {
+                        if (!mapInitialized) {
+                            initTrackerMap();
+                        } else {
+                            // Cuando cambia el display en CSS a flex/block, Leaflet necesita recalcular lienzo
+                            setTimeout(() => { theMap.invalidateSize(); }, 200);
+                        }
+                    }
+                });
+            });
+
+            // CHECKLIST
+            const checkboxes = document.querySelectorAll('.check-item input[type="checkbox"]');
+            checkboxes.forEach(box => {
+                box.addEventListener('change', (e) => {
+                    if (e.target.checked) e.target.parentElement.style.opacity = '0.5';
+                    else e.target.parentElement.style.opacity = '1';
+                });
+            });
+
+            // CALCULATOR
+            const btnCalc = document.getElementById('calc-btn');
+            if (btnCalc) {
+                btnCalc.addEventListener('click', () => {
+                    const flight = parseFloat(document.getElementById('c-flight').value) || 0;
+                    const acc = parseFloat(document.getElementById('c-acc').value) || 0;
+                    const food = parseFloat(document.getElementById('c-food').value) || 0;
+                    const fixed = parseFloat(document.getElementById('c-fixed').value) || 0;
+                    const total = flight + fixed + (acc * 26) + (food * 26);
+                    const resultBox = document.getElementById('calc-result');
+                    resultBox.style.opacity = 0;
+                    setTimeout(() => {
+                        resultBox.innerText = `$${total.toLocaleString('en-US')}`;
+                        resultBox.style.opacity = 1;
+                    }, 300);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
